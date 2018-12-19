@@ -7,6 +7,7 @@ package paquetetienda;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,34 +48,32 @@ public class AccesoBD {
           return lista;
     }
 
-    static ArrayList<Producto> recuperarProductosPorID(ArrayList<Integer> productos_comprados) {
+    static ArrayList<Producto> recuperarProductosPorID(ArrayList<Compra> productos_comprados) {
         ArrayList<Producto> obj_productos_comprados=new ArrayList<>();
         String lista_comas="";
-        for(int id: productos_comprados)
-        {
-            lista_comas+=id+",";
-        }
-        lista_comas=lista_comas.substring(0, lista_comas.length()-1);
-        String query="select * from productos where id in("+lista_comas+")";
-        Connection c;
-        try {
+        Connection c=null;
+        
             c = DriverManager.getConnection("jdbc:mysql://10.2.130.13:3306/lista_compra?serverTimezone=UTC", "root", "");
-            Statement stmt=c.createStatement();
-            ResultSet rs=stmt.executeQuery(query);
-            while(rs.next())
-            {
-                String nombre=rs.getString("nombre");
-                int precio=rs.getInt("precio");
-                int id=rs.getInt("id");
-                int stock=rs.getInt("stock");
-                Producto p=new Producto(id, nombre, precio, stock);
-                obj_productos_comprados.add(p);
-            }
+            
+        }
+        //..in (3, 4, 5, 3)
+       
+        
+       return obj_productos_comprados;
+    }
+
+    static void actualizarStock(int id) {
+        
+        try {
+            Connection c = DriverManager.getConnection("jdbc:mysql://10.2.130.13:3306/lista_compra?serverTimezone=UTC", "root", "");
+            String query_update ="UPDATE productos SET stock=stock-1 WHERE id=?";
+            int[] argumentos={id};
+            PreparedStatement stmt=c.prepareStatement(query_update);
+            stmt.setInt(1, id);
+            stmt.execute();
         } catch (SQLException ex) {
             Logger.getLogger(AccesoBD.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
-       return obj_productos_comprados;
     }
     
 }

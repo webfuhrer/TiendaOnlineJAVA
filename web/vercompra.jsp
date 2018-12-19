@@ -20,5 +20,6 @@
     <body>
         <h1>Factura</h1>
         <%=html_factura%>
+        <a href="ServletTienda?accion=seguircomprando">Seguir comprando</a>
     </body>
 </html>
